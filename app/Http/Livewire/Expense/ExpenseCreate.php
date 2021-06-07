@@ -4,18 +4,24 @@ namespace App\Http\Livewire\Expense;
 
 use Livewire\Component;
 use App\Models\Expense;
+use Livewire\WithFileUploads;
 class ExpenseCreate extends Component
 {
+
+    use WithFileUploads;
+
 
     public $amount = '0.00';
     public $type;
     public $description;
+    public $photo;
 
     protected $rules = [
 
         'amount' => 'required',
         'type' => 'required',
-        'description' => 'required'
+        'description' => 'required',
+        'photo'       =>'image'
 
     ];
 
@@ -24,11 +30,19 @@ class ExpenseCreate extends Component
 
         $this->validate();
 
+        if ($this->photo) {
+
+           $photo =  $this->photo->store('expenses-photos', 'public');
+
+        }
+
         auth()->user()->expenses()->create([
             'amount' => $this->amount,
             'type' => $this->type,
             'description' => $this->description,
-            'user_id' => 1
+            'user_id' => 1,
+            'photo'   => $photo?? null
+
 
         ]);
 
